@@ -17,7 +17,19 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /root/neo-fiugure/backend-neo-figure   # 👈 đường dẫn BE trên VPS
+            echo "🚀 Start deploy backend..."
+
+            # ===== LOAD NODE =====
+            export NVM_DIR="$HOME/.nvm"
+            source $NVM_DIR/nvm.sh
+
+            # ===== FIX PATH =====
+            export PATH=$PATH:/usr/local/bin
+
+            # ===== FIX SSH =====
+            export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no"
+
+            cd /root/neo-fiugure/backend-neo-figure
 
             git pull origin main
 
@@ -25,3 +37,5 @@ jobs:
             npm run build
 
             pm2 restart be || pm2 start dist/main.js --name be
+
+            echo "✅ Done"
