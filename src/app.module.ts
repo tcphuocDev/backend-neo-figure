@@ -18,7 +18,8 @@ import { ContentGenerationModule } from './agents/content-generation/content-gen
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    // MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot('mongodb+srv://admin:quan1234567@cluster.snvffpj.mongodb.net/neo-figure?retryWrites=true&w=majority'),
     ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
