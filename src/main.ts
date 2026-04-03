@@ -12,8 +12,6 @@ async function bootstrap() {
   // ✅ FIX CORS
   app.enableCors({
     origin: [
-      'http://localhost:5173',
-      'http://161.97.121.202:5173',
       'http://161.97.121.202:3006'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
