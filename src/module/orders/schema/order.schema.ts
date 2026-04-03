@@ -3,7 +3,6 @@ import { Document } from "mongoose";
 
 @Schema({ timestamps: true })
 export class Order extends Document {
-
   @Prop()
   customerName: string;
 
@@ -22,8 +21,8 @@ export class Order extends Document {
       name: String,
       price: Number,
       quantity: Number,
-      thumbnail: String
-    }
+      thumbnail: String,
+    },
   ])
   items: any[];
 
@@ -32,5 +31,8 @@ export class Order extends Document {
 
   @Prop({ default: 'pending' })
   status: string; // pending | paid | shipped
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export const OrderSchema = SchemaFactory.createForClass(Order)

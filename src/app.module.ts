@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CategoriesModule } from './module/categories/categories.module';
 import { OrdersModule } from './module/orders/orders.module';
 import { ProductsModule } from './module/products/products.module';
+import { ReportsModule } from './module/reports/reports.module';
 import { UploadModule } from './upload/upload.module';
 import { CrawlerModule } from './crawler/crawler.module';
 import { UsersModule } from './module/users/users.module';
@@ -26,6 +27,7 @@ import { ContentGenerationModule } from './agents/content-generation/content-gen
     CategoriesModule,
     OrdersModule,
     ProductsModule,
+    ReportsModule,
     UploadModule,
     CrawlerModule,
     // AI Agents

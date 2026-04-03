@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { UsersService } from './module/users/users.service';
 import * as dotenv from 'dotenv';
 import { execSync } from 'child_process';
 
@@ -20,6 +21,10 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3100;
+
+  // Create default admin account
+  const usersService = app.get(UsersService);
+  await usersService.createDefaultAdmin();
 
   app.enableShutdownHooks();
 

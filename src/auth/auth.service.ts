@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../module/users/users.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
@@ -36,6 +36,36 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { sub: user._id, email: user.email, role: user.role };
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+      },
+      accessToken,
+    };
+  }
+
+  async adminLogin(loginDto: LoginDto) {
+    const user = await this.usersService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Check if user is admin
+    if (user.role !== 'admin') {
+      throw new ForbiddenException('Admin access required. Only administrators can login to admin panel.');
     }
 
     const payload = { sub: user._id, email: user.email, role: user.role };

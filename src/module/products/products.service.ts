@@ -2,8 +2,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schema/product.schema';
 import { Category } from '../categories/schema/category.schema';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 
 @Injectable()
@@ -13,8 +14,38 @@ export class ProductsService {
     @InjectModel(Category.name) private categoryModel: Model<Category>,
   ) {}
 
+  private validatePricing(data: CreateProductDto | UpdateProductDto) {
+    // Validation: If on sale, originalPrice must be greater than price
+    if (data.isOnSale && data.originalPrice) {
+      if (data.price >= data.originalPrice) {
+        throw new BadRequestException(
+          'Invalid pricing: Original price must be GREATER than selling price when on sale. ' +
+          'Example - Selling Price: 800,000₫ (sale price) < Original Price: 1,000,000₫ (will be strikethrough)'
+        );
+      }
+    }
+  }
+
   create(data: CreateProductDto) {
+    this.validatePricing(data);
     return this.model.create(data);
+  }
+
+  async update(id: string, data: UpdateProductDto) {
+    this.validatePricing(data);
+    const product = await this.model.findByIdAndUpdate(id, data, { new: true });
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return product;
+  }
+
+  async delete(id: string) {
+    const product = await this.model.findByIdAndDelete(id);
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return { message: 'Product deleted successfully', product };
   }
 
   async findAll(query: QueryProductDto) {
