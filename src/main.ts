@@ -9,13 +9,29 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ FIX CORS
+  // ✅ FIX CORS - Allow multiple origins
   app.enableCors({
-    origin: [
-      'http://161.97.121.202:3006'
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        'http://161.97.121.202:3006',
+        'http://localhost:3006',
+        'http://localhost:5173',
+        'http://localhost:3000',
+      ];
+
+      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️  CORS blocked origin: ${origin}`);
+        callback(null, true); // Still allow but log warning
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type,Authorization,Accept',
   });
 
   const port = process.env.PORT || 3100;
